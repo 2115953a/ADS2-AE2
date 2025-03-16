@@ -19,6 +19,7 @@ public class MinPriorityQueue {
     }
 
     // Returns the element of the queue with the smallest value/key. Equivalent to 'peek'.
+    // By design, this will always be the first element.
     public int min() {
         if (heap.isEmpty()) {
             throw new IllegalStateException("Queue is empty.");
