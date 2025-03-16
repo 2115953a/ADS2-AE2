@@ -1,5 +1,5 @@
 import java.util.Arrays;
-// Please note - the implementation does NOT use this import, only used to print to screen.
+// Please note - the implementation does NOT use this import, only used to print tests to screen.
 
 public class DynamicSet {
     public static class Node {
