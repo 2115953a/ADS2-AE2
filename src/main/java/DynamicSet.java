@@ -18,35 +18,14 @@ public class DynamicSet {
         this.size = 0;
     }
 
-    public int setSize() {
-        return size;
-    }
 
-    public boolean setEmpty() {
-        return size == 0;
-    }
-
-    public boolean isElement(int element) {
-        return isElement(head, element);
-    }
-
-    private boolean isElement(Node node, int element) {
-        if (node == null) {
-            return false;
-        } else if (element == node.data) {
-            return true;
-        }
-        if (element < node.data) {
-            return isElement(node.left, element);
-        } else {
-            return isElement(node.right, element);
-        }
-    }
-
+    /* Dynamic Set, Main Operations */
+    // Adds element x to S, if it is not present already
     public void add(int element) {
         head = add(head, element);
     }
 
+    // Helper function to add element x to S, if it is not present already
     private Node add(Node node, int element) {
         if (node == null) {                           // If node empty, return new node
             size++;
@@ -66,6 +45,7 @@ public class DynamicSet {
         return node;
     }
 
+    // Remove element from node, if it is present
     public void remove(int element) {
         if (!isElement(element)) {
             System.out.println("Element not in Set.");
@@ -75,6 +55,7 @@ public class DynamicSet {
         }
     }
 
+    // Helper method to remove element from node, if it is present
     private Node remove(Node node, int element) {
         if (node == null) {
             return null;
@@ -90,6 +71,97 @@ public class DynamicSet {
         return node;
     }
 
+    // Checks whether element x is in set S
+    public boolean isElement(int element) {
+        return isElement(head, element);
+    }
+
+    // Helper function to check whether element x is in set S
+    private boolean isElement(Node node, int element) {
+        if (node == null) {
+            return false;
+        } else if (element == node.data) {
+            return true;
+        }
+        if (element < node.data) {
+            return isElement(node.left, element);
+        } else {
+            return isElement(node.right, element);
+        }
+    }
+
+    // Check whether set S has no elements
+    public boolean setEmpty() {
+        return size == 0;
+    }
+
+    // Return the number of elements of set S
+    public int setSize() {
+        return size;
+    }
+
+
+    /* Dynamic Set, Set Operations */
+    // naïve definition of UNION(S(a),T(b)) that takes all elements and inserts one-by-one
+    public static DynamicSet union(DynamicSet a, DynamicSet b) {
+        return mergeInefficient(a.head, b.head);
+    }
+
+    // Efficient definition of UNION(S(a),T(b)), flattens trees into arrays before combining.
+    // Only possible because arrays are returned sorted from DynamicSet function 'toArray()'.
+    public static DynamicSet unionEfficient(DynamicSet a, DynamicSet b) {
+        return mergeEfficient(toArray(a.head), toArray(b.head));
+    }
+
+    // return the intersection of sets S(a) and T(b)
+    public static DynamicSet intersection(DynamicSet a, DynamicSet b) {
+        DynamicSet result = new DynamicSet();
+
+        int[] arrayA = toArray(a.head);
+        int[] arrayB = toArray(b.head);
+        for (int i : arrayA) {
+            for (int j : arrayB) {
+                if (i == j) {
+                    result.add(i);  // Note, this adds unique elements.
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // returns the difference of sets S(a) and T(b)
+    public static DynamicSet difference(DynamicSet a, DynamicSet b) {
+        DynamicSet result = new DynamicSet();
+
+        int[] arrayA = toArray(a.head);
+        int[] arrayB = toArray(b.head);
+        for (int i : arrayA) {
+            result.add(i);
+            }
+        for (int j : arrayB) {
+            if (result.isElement(j)) {
+                result.remove(j);
+            }
+        }
+
+        return result;
+    }
+
+    // check whether set S (a) is a subset of set T (b)
+    public static boolean subset(DynamicSet a, DynamicSet b) {
+        int[] arrayB = toArray(b.head);
+        for (int i : arrayB) {
+            if (!a.isElement(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /* Additional functions to support Dynamic Set below here */
+    // Helper function to delete nodes for 'remove'
     private Node deleteNode(Node node) {
         // If no children or only one child
         if (node.left == null) {
@@ -109,58 +181,6 @@ public class DynamicSet {
         node.right = remove(node.right, successor.data);  // Delete the smallest element, as found
 
         return node;
-    }
-
-    public static DynamicSet union(DynamicSet a, DynamicSet b) {
-        return mergeInefficient(a.head, b.head);
-    }
-
-    public static DynamicSet unionEfficient(DynamicSet a, DynamicSet b) {
-        return mergeEfficient(toArray(a.head), toArray(b.head));
-    }
-
-    public static DynamicSet intersection(DynamicSet a, DynamicSet b) {
-        DynamicSet result = new DynamicSet();
-
-        int[] arrayA = toArray(a.head);
-        int[] arrayB = toArray(b.head);
-        for (int i : arrayA) {
-            for (int j : arrayB) {
-                if (i == j) {
-                    result.add(i);  // Note, this adds unique elements.
-                    break;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static DynamicSet difference(DynamicSet a, DynamicSet b) {
-        DynamicSet result = new DynamicSet();
-
-        int[] arrayA = toArray(a.head);
-        int[] arrayB = toArray(b.head);
-        for (int i : arrayA) {
-            result.add(i);
-            }
-        for (int j : arrayB) {
-            if (result.isElement(j)) {
-                result.remove(j);
-            }
-        }
-
-        return result;
-    }
-
-    public static boolean subset(DynamicSet a, DynamicSet b) {
-        int[] arrayA = toArray(a.head);
-        for (int i : arrayA) {
-            if (!b.isElement(i)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     // Converts a Node to an Array
@@ -279,6 +299,6 @@ public class DynamicSet {
         System.out.println(union);
         System.out.println(intersection);
         System.out.println(difference);
-        System.out.println(subset(intersection,union));
+        System.out.println(subset(union, intersection));
     }
 }
