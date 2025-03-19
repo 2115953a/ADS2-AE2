@@ -24,6 +24,6 @@ public class RopeConnector {
         int[] ropeLengths = {4, 8, 3, 1, 6, 9, 12, 7, 2};
         int totalCost = calculateMinimumCost(ropeLengths);
 
-        System.out.println("\nTotal cost: " + totalCost);
+        System.out.println("Total cost: " + totalCost);
     }
 }

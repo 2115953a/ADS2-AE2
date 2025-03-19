@@ -25,7 +25,7 @@ public class DynamicSet {
         head = add(head, element);
     }
 
-    // Helper function to add element x to S, if it is not present already
+    // Helper function to add element element(x) to Node(S), if it is not present already
     private Node add(Node node, int element) {
         if (node == null) {                           // If node empty, return new node
             size++;
@@ -102,16 +102,17 @@ public class DynamicSet {
 
 
     /* Dynamic Set, Set Operations */
-    // naïve definition of UNION(S(a),T(b)) that takes all elements and inserts one-by-one
+    // More optimised version of UNION, that flattens each set into an array and combines using add
+    // (which rejects duplicate elements)
     public static DynamicSet union(DynamicSet a, DynamicSet b) {
-        return mergeInefficient(a.head, b.head);
+        int[] arrayA = toArray(a.head);
+        for (int i : arrayA) {
+            b.add(i);
+        }
+
+        return b;
     }
 
-    // Efficient definition of UNION(S(a),T(b)), flattens trees into arrays before combining.
-    // Only possible because arrays are returned sorted from DynamicSet function 'toArray()'.
-    public static DynamicSet unionEfficient(DynamicSet a, DynamicSet b) {
-        return mergeEfficient(toArray(a.head), toArray(b.head));
-    }
 
     // return the intersection of sets S(a) and T(b)
     public static DynamicSet intersection(DynamicSet a, DynamicSet b) {
@@ -204,73 +205,6 @@ public class DynamicSet {
     private static int countNodes(Node node) {
         if (node == null) return 0;
         return 1 + countNodes(node.left) + countNodes(node.right);
-    }
-
-    public static DynamicSet mergeEfficient(int[] array1, int[] array2) {
-        int length1 = array1.length;
-        int length2 = array2.length;
-        int[] temp = new int[length1 + length2];
-
-        int index1 = 0, index2 = 0, resultIndex = 0;
-
-        // Merge until end of one of arrays
-        while (index1 < length1 && index2 < length2) {
-            if (array1[index1] < array2[index2]) {
-                if (resultIndex == 0 || array1[index1] != temp[resultIndex-1]) {  // This additional code prevents duplicates
-                    temp[resultIndex++] = array1[index1];
-                }
-                index1++;
-            } else if (array1[index1] > array2[index2]) {
-                if (resultIndex == 0 || array2[index2] != temp[resultIndex-1]) {
-                    temp[resultIndex++] = array2[index2];
-                }
-                index2++;
-            } else {
-                // Equal elements, add to array only once
-                if (resultIndex == 0 || array1[index1] != temp[resultIndex-1]) {
-                    temp[resultIndex++] = array1[index1];
-                }
-                index1++;
-                index2++;
-            }
-        }
-
-        // If one array completes, copy all leftover elements from the other
-        while (index1 < length1) {
-            if (resultIndex == 0 || array1[index1] != temp[resultIndex-1]) {
-                temp[resultIndex++] = array1[index1];
-            }
-            index1++;
-        }
-
-        while (index2 < length2) {
-            if (resultIndex == 0 || array2[index2] != temp[resultIndex-1]) {
-                temp[resultIndex++] = array2[index2];
-            }
-            index2++;
-        }
-
-        DynamicSet dynamicSet = new DynamicSet();
-        for (int i: temp) {
-            dynamicSet.add(i);
-        }
-
-        return dynamicSet;
-    }
-
-    public static DynamicSet mergeInefficient(Node a, Node b) {
-        DynamicSet result = new DynamicSet();
-
-        int[] arrayA = toArray(a);
-        int[] arrayB = toArray(b);
-        for (int i : arrayA) {
-            result.add(i);
-        }
-        for (int j : arrayB) {
-            result.add(j);
-        }
-
-        return result;
     }
 
     @Override
